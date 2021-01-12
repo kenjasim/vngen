@@ -3,10 +3,8 @@ package cmd
 import (
 	"errors"
 
-	"nenvoy.com/pkg/deployment"
-
 	"github.com/spf13/cobra"
-	"nenvoy.com/pkg/constructor"
+	"nenvoy.com/pkg/topology"
 	"nenvoy.com/pkg/utils/handle"
 	"nenvoy.com/pkg/utils/printing"
 
@@ -44,11 +42,8 @@ func buildNetwork(args []string) (err error) {
 		return err
 	}
 
-	// Read in the template file
-	netDef, err := constructor.ConvertYAML(args[0])
-
 	// Create the deployment
-	err = deployment.CreateDeployment(*netDef)
+	err = topology.Build(args[0])
 	if err != nil {
 		return err
 	}

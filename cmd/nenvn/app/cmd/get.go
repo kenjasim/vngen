@@ -50,7 +50,7 @@ func getHosts() (err error) {
 
 	// Create the table and print the hosts
 	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
-	fmt.Fprintln(w, "Name\tRAM\tCPU\tStorage\tDeploymentID\t")
+	fmt.Fprintln(w, "Name\tRAM\tCPU\tStorage\tDeployment\t")
 
 	for _, host := range hosts {
 		fmt.Fprintf(w, "%s\t%d\t%d\t%s\t%d\n", host.Name, host.RAM, host.CPUs, host.HDSpace, host.DeploymentID)
@@ -69,7 +69,7 @@ func getNetworks() (err error) {
 
 	// Create the table and print the hosts
 	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
-	fmt.Fprintln(w, "name\ttype\tip\tdhcp range\tdeploymentID\t")
+	fmt.Fprintln(w, "Name\tType\tIP\tDHCP Range\tDeploymentID\t")
 
 	for _, network := range networks {
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%d\n", network.Name, network.Type, network.IP, fmt.Sprintf("%s-%s", network.DHCPLower, network.DHCPUpper), network.DeploymentID)

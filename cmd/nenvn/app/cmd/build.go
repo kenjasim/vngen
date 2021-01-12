@@ -3,8 +3,7 @@ package cmd
 import (
 	"errors"
 
-	"nenvoy.com/pkg/host"
-	"nenvoy.com/pkg/network"
+	"nenvoy.com/pkg/deployment"
 
 	"github.com/spf13/cobra"
 	"nenvoy.com/pkg/constructor"
@@ -44,36 +43,14 @@ func buildNetwork(args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	printing.PrintSuccess("Created application directories")
 
 	// Read in the template file
 	netDef, err := constructor.ConvertYAML(args[0])
 
-	// Create the network definitions and create them
-	for _, netwr := range netDef.Networks {
-		networkDef, err := network.CreateNetworkXML(netwr)
-		if err != nil {
-			return err
-		}
-
-		// Create the network
-		err = network.CreateNetwork(networkDef)
-		if err != nil {
-			return err
-		}
-	}
-
-	// Create the host definition files and create the hosts
-	for _, hst := range netDef.Host {
-		hostDef, err := host.CreateHostXML(hst)
-		if err != nil {
-			return err
-		}
-
-		err = host.CreateHost(hostDef)
-		if err != nil {
-			return err
-		}
+	// Create the deployment
+	err = deployment.CreateDeployment(*netDef)
+	if err != nil {
+		return err
 	}
 
 	return nil

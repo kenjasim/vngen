@@ -6,20 +6,58 @@ import (
 	"io/ioutil"
 
 	"github.com/pkg/errors"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	libvirt "libvirt.org/libvirt-go"
+	"nenvoy.com/pkg/constants"
 	structs "nenvoy.com/pkg/constants"
 	cmd "nenvoy.com/pkg/utils/cmd"
 	"nenvoy.com/pkg/utils/files"
 )
 
-// CreateHostXML - Create the host domain
-func CreateHostXML(host structs.HostDefintion) (domainDef string, err error) {
+//Host - Struct for the host data in the database
+type Host struct {
+	gorm.Model
+	Name         string
+	Image        string
+	RAM          int
+	CPUs         int
+	Username     string
+	Password     string
+	HDSpace      string
+	DeploymentID uint
+}
+
+// DefineHost - defines the host and writes the XML config file
+func DefineHost(hostDef structs.HostDefintion) (host Host, domainDef string, err error) {
+
+	// Create host struct for database
+	host = Host{
+		Name:     hostDef.HostName,
+		Image:    hostDef.Image,
+		RAM:      hostDef.RAM,
+		CPUs:     hostDef.CPUs,
+		Username: hostDef.Username,
+		Password: hostDef.Password,
+		HDSpace:  hostDef.HDSpace,
+	}
+
+	domainDef, err = createHostXML(host, hostDef.Networks)
+	if err != nil {
+		return host, domainDef, err
+	}
+
+	return host, domainDef, nil
+}
+
+// createHostXML - Create the host domain
+func createHostXML(host Host, networks []string) (domainDef string, err error) {
 	//Define the domain object for libvirt
 	domain := structs.Domain{}
 
 	// Set the metadata values
 	domain.Type = "kvm"
-	domain.Name = host.HostName
+	domain.Name = host.Name
 	// Memory values
 	domain.Memory.Unit = "MB"
 	domain.Memory.Value = host.RAM
@@ -40,7 +78,7 @@ func CreateHostXML(host structs.HostDefintion) (domainDef string, err error) {
 	domain.Devices.Emulator = "/usr/bin/qemu-system-x86_64"
 
 	// Create the disks that are required
-	err = CreateHostDisks(host.HostName, host.Image, host.HDSpace, host.Username, host.Password)
+	err = createHostDisks(host.Name, host.Image, host.HDSpace, host.Username, host.Password)
 	if err != nil {
 		return "", err
 	}
@@ -51,7 +89,7 @@ func CreateHostXML(host structs.HostDefintion) (domainDef string, err error) {
 	mainHD.Device = "disk"
 	mainHD.Driver.Name = "qemu"
 	mainHD.Driver.Type = "qcow2"
-	mainHD.Source.File = fmt.Sprintf("/var/lib/nenvn/machines/%s/%s.qcow2", host.HostName, host.HostName)
+	mainHD.Source.File = fmt.Sprintf("/var/lib/nenvn/machines/%s/%s.qcow2", host.Name, host.Name)
 	mainHD.Target.Dev = "vda"
 	mainHD.Target.Bus = "virtio"
 
@@ -63,13 +101,13 @@ func CreateHostXML(host structs.HostDefintion) (domainDef string, err error) {
 	cloudInitHD.Device = "disk"
 	cloudInitHD.Driver.Name = "qemu"
 	cloudInitHD.Driver.Type = "raw"
-	cloudInitHD.Source.File = fmt.Sprintf("/var/lib/nenvn/machines/%s/%s-seed.qcow2", host.HostName, host.HostName)
+	cloudInitHD.Source.File = fmt.Sprintf("/var/lib/nenvn/machines/%s/%s-seed.qcow2", host.Name, host.Name)
 	cloudInitHD.Target.Dev = "vdb"
 	cloudInitHD.Target.Bus = "virtio"
 	domain.Devices.Disk = append(domain.Devices.Disk, cloudInitHD)
 
 	// Setup the interfaces
-	for _, network := range host.Networks {
+	for _, network := range networks {
 		iface := structs.Interface{}
 		iface.Type = "network"
 		iface.Source.Network = network
@@ -95,7 +133,7 @@ func CreateHostXML(host structs.HostDefintion) (domainDef string, err error) {
 }
 
 // CreateHostDisks - Create the host disks which is needed for the vm
-func CreateHostDisks(name string, image string, space string, username string, password string) (err error) {
+func createHostDisks(name string, image string, space string, username string, password string) (err error) {
 	// Create host directory
 	dirs := []string{fmt.Sprintf("/var/lib/nenvn/machines/%s", name)}
 	err = files.CreateDirectories(dirs)
@@ -159,4 +197,20 @@ func CreateHost(hostDef string) (err error) {
 		return err
 	}
 	return nil
+}
+
+// GetHosts - returns all the hosts in the database
+func GetHosts() (hosts []Host, err error) {
+	// Connect and open the database
+	db, err := gorm.Open(sqlite.Open(constants.DBPath), &gorm.Config{})
+	if err != nil {
+		return hosts, errors.Wrap(err, "failed to connect database")
+	}
+
+	err = db.Find(&hosts).Error
+	if err != nil {
+		return hosts, errors.Wrap(err, "could not find hosts")
+	}
+
+	return hosts, nil
 }

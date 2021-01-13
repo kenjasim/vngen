@@ -4,16 +4,18 @@ import (
 	"encoding/xml"
 	"fmt"
 
+	"nenvoy.com/pkg/database"
 	"nenvoy.com/pkg/utils/printing"
 
 	"github.com/pkg/errors"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	libvirt "libvirt.org/libvirt-go"
 
-	"nenvoy.com/pkg/constants"
 	structs "nenvoy.com/pkg/constants"
 )
+
+var errNameUsed = errors.New("Network name already used")
+var errIPUsed = errors.New("Network IP already used")
 
 //Network - Struct for the network data in the database
 type Network struct {
@@ -128,6 +130,18 @@ func (n *Network) Destroy() (err error) {
 
 // DefineNetwork - Defines the network struct to be added to the database and creates the xml file
 func DefineNetwork(net structs.NetworkDefinition) (network Network, err error) {
+	// Check if the name exists in the database
+	netTest, err := GetNetworkByName(net.NetworkName)
+	if netTest != (Network{}) {
+		return network, errNameUsed
+	}
+
+	// Check the IP Addresses
+	netTest, err = GetNetworkByIP(net.NetworkAddr)
+	if netTest != (Network{}) {
+		return network, errIPUsed
+	}
+
 	// Create network struct for database
 	network = Network{
 		Name:      net.NetworkName,
@@ -148,9 +162,9 @@ func DefineNetwork(net structs.NetworkDefinition) (network Network, err error) {
 // GetNetworks - returns all the networks in the database
 func GetNetworks() (networks []Network, err error) {
 	// Connect and open the database
-	db, err := gorm.Open(sqlite.Open(constants.DBPath), &gorm.Config{})
+	db, err := database.NewSession()
 	if err != nil {
-		return networks, errors.Wrap(err, "failed to connect database")
+		return nil, nil
 	}
 
 	err = db.Find(&networks).Error
@@ -164,9 +178,9 @@ func GetNetworks() (networks []Network, err error) {
 //GetNetworksByDeployment - returns all the networks in a deployment
 func GetNetworksByDeployment(ID uint) (networks []Network, err error) {
 	// Connect and open the database
-	db, err := gorm.Open(sqlite.Open(constants.DBPath), &gorm.Config{})
+	db, err := database.NewSession()
 	if err != nil {
-		return networks, errors.Wrap(err, "failed to connect database")
+		return nil, nil
 	}
 
 	err = db.Where("deployment_id = ?", ID).Find(&networks).Error
@@ -175,4 +189,40 @@ func GetNetworksByDeployment(ID uint) (networks []Network, err error) {
 	}
 
 	return networks, nil
+}
+
+//GetNetworkByName - returns the network with a given name
+func GetNetworkByName(name string) (network Network, err error) {
+	// Connect and open the database
+	db, err := database.NewSession()
+	if err != nil {
+		return network, err
+	}
+
+	err = db.Where("name = ?", name).First(&network).Error
+	if err == gorm.ErrRecordNotFound {
+		return network, nil
+	} else if err != nil {
+		return network, errors.Wrap(err, "could not find networks")
+	}
+
+	return network, nil
+}
+
+//GetNetworkByIP - returns the network with a given ip
+func GetNetworkByIP(ip string) (network Network, err error) {
+	// Connect and open the database
+	db, err := database.NewSession()
+	if err != nil {
+		return network, err
+	}
+
+	err = db.Where("ip = ?", ip).First(&network).Error
+	if err == gorm.ErrRecordNotFound {
+		return network, nil
+	} else if err != nil {
+		return network, errors.Wrap(err, "could not find networks")
+	}
+
+	return network, nil
 }

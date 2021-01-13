@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"nenvoy.com/pkg/constants"
 	"nenvoy.com/pkg/constructor"
+	"nenvoy.com/pkg/database"
 	"nenvoy.com/pkg/deployment"
 	"nenvoy.com/pkg/host"
 	"nenvoy.com/pkg/network"
@@ -22,12 +22,12 @@ func Build(templatePath string) (err error) {
 	printing.PrintInfo(fmt.Sprintf("Creating deployment %s...", vnDef.Deployment.DeploymentName))
 
 	// Connect and open the database
-	db, err := gorm.Open(sqlite.Open(constants.DBPath), &gorm.Config{})
+	db, err := database.NewSession()
 	if err != nil {
-		return errors.Wrap(err, "failed to connect database")
+		return err
 	}
 
-	// Migrate the database
+	// Ensure the hosts, networks and deployments are migrated
 	err = migrateDatabase(db)
 	if err != nil {
 		return err
@@ -39,13 +39,17 @@ func Build(templatePath string) (err error) {
 	// Create the networks
 	err = createNetworks(*vnDef, dep)
 	if err != nil {
-		return errors.Wrap(err, "failed to create networks: ")
+		creationError := errors.Wrap(err, "failed to create networks")
+		cleanupDeployment(dep)
+		return creationError
 	}
 
 	// Create the hosts
 	err = createHosts(*vnDef, dep)
 	if err != nil {
-		return errors.Wrap(err, "failed to create hosts: ")
+		creationError := errors.Wrap(err, "failed to create hosts")
+		cleanupDeployment(dep)
+		return creationError
 	}
 
 	// Write the deployment to the database
@@ -309,4 +313,21 @@ func createHosts(vnDef constants.VirtualNetworkDefinition, dep *deployment.Deplo
 	}
 
 	return nil
+}
+
+func cleanupDeployment(dep *deployment.Deployment) {
+	printing.PrintWarning("Build failed, starting cleanup...")
+	printing.PrintInfo("Starting cleanup due to error...")
+	// Undefine hosts and networks
+	for _, netwrk := range dep.Networks {
+		// Undefine the networks
+		netwrk.Destroy()
+	}
+
+	for _, hst := range dep.Hosts {
+		// Undefine the networks
+		hst.Destroy()
+	}
+
+	printing.PrintSuccess("Cleanup finished")
 }

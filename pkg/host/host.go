@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"nenvoy.com/pkg/database"
 	"nenvoy.com/pkg/utils/printing"
 
 	"github.com/pkg/errors"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	libvirt "libvirt.org/libvirt-go"
 	"nenvoy.com/pkg/constants"
@@ -16,6 +16,8 @@ import (
 	cmd "nenvoy.com/pkg/utils/cmd"
 	"nenvoy.com/pkg/utils/files"
 )
+
+var errNameUsed = errors.New("Host name already used")
 
 //Host - Struct for the host data in the database
 type Host struct {
@@ -222,9 +224,9 @@ func (h *Host) Destroy() (err error) {
 		return err
 	}
 
-	db, err := gorm.Open(sqlite.Open(constants.DBPath), &gorm.Config{})
+	db, err := database.NewSession()
 	if err != nil {
-		return errors.Wrap(err, "failed to connect database")
+		return err
 	}
 
 	// Remove from the database
@@ -385,6 +387,12 @@ chpasswd:
 // DefineHost - defines the host and writes the XML config file
 func DefineHost(hostDef structs.HostDefintion) (host Host, err error) {
 
+	// Check if the name exists in the database
+	hostTest, err := GetHostByName(hostDef.HostName)
+	if hostTest != (Host{}) {
+		return host, errNameUsed
+	}
+
 	// Create host struct for database
 	host = Host{
 		Name:     hostDef.HostName,
@@ -402,9 +410,9 @@ func DefineHost(hostDef structs.HostDefintion) (host Host, err error) {
 // GetHosts - returns all the hosts in the database
 func GetHosts() (hosts []Host, err error) {
 	// Connect and open the database
-	db, err := gorm.Open(sqlite.Open(constants.DBPath), &gorm.Config{})
+	db, err := database.NewSession()
 	if err != nil {
-		return hosts, errors.Wrap(err, "failed to connect database")
+		return nil, err
 	}
 
 	err = db.Find(&hosts).Error
@@ -418,9 +426,9 @@ func GetHosts() (hosts []Host, err error) {
 //GetHostsByDeployment - returns all the hosts in a deployment
 func GetHostsByDeployment(ID uint) (hosts []Host, err error) {
 	// Connect and open the database
-	db, err := gorm.Open(sqlite.Open(constants.DBPath), &gorm.Config{})
+	db, err := database.NewSession()
 	if err != nil {
-		return hosts, errors.Wrap(err, "failed to connect database")
+		return nil, err
 	}
 
 	err = db.Where("deployment_id = ?", ID).Find(&hosts).Error
@@ -434,13 +442,15 @@ func GetHostsByDeployment(ID uint) (hosts []Host, err error) {
 // GetHostByName - Returns the host with that particular name
 func GetHostByName(name string) (host Host, err error) {
 	// Connect and open the database
-	db, err := gorm.Open(sqlite.Open(constants.DBPath), &gorm.Config{})
+	db, err := database.NewSession()
 	if err != nil {
-		return host, errors.Wrap(err, "failed to connect database")
+		return host, err
 	}
 
 	err = db.Where("name = ?", name).First(&host).Error
-	if err != nil {
+	if err == gorm.ErrRecordNotFound {
+		return host, nil
+	} else if err != nil {
 		return host, errors.Wrap(err, "could not find host")
 	}
 

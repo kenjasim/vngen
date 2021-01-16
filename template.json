@@ -1,0 +1,41 @@
+{
+    "deployment": {
+      "name": "default"
+    },
+    "networks": [
+      {
+        "name": "br0",
+        "netaddr": "20.0.0.1",
+        "dhcplower": "20.0.0.2",
+        "dhcpupper": "20.0.0.254",
+        "netmask": "255.255.255.0",
+        "type": "nat"
+      }
+    ],
+    "hosts": [
+      {
+        "name": "master1",
+        "image": "ubuntu",
+        "ram": 2048,
+        "cpus": 2,
+        "hd": "10G",
+        "username": "dev",
+        "password": "ved",
+        "networks": [
+          "br0"
+        ]
+      },
+      {
+        "name": "master2",
+        "image": "ubuntu",
+        "ram": 2048,
+        "cpus": 2,
+        "hd": "10G",
+        "username": "dev",
+        "password": "ved",
+        "networks": [
+          "br0"
+        ]
+      }
+    ]
+  }

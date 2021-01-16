@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
+	"nenvoy.com/pkg/constructor"
 	"nenvoy.com/pkg/topology"
 	"nenvoy.com/pkg/utils/handle"
 	"nenvoy.com/pkg/utils/printing"
@@ -42,8 +43,11 @@ func buildNetwork(args []string) (err error) {
 		return err
 	}
 
+	// Read in the template file
+	vnDef, err := constructor.ConvertYAML(args[0])
+
 	// Create the deployment
-	err = topology.Build(args[0])
+	err = topology.Build(*vnDef)
 	if err != nil {
 		return err
 	}

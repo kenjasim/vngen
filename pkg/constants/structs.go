@@ -5,32 +5,32 @@ import "encoding/xml"
 //VirtualNetworkDefinition - provides the structure of the templated YAML file
 type VirtualNetworkDefinition struct {
 	Deployment struct {
-		DeploymentName string `yaml:"name"`
-	} `yaml:"deployment"`
-	Networks []NetworkDefinition `yaml:"networks"`
-	Host     []HostDefintion     `yaml:"hosts"`
+		DeploymentName string `yaml:"name" json:"name"`
+	} `yaml:"deployment" json:"deployment"`
+	Networks []NetworkDefinition `yaml:"networks" json:"networks"`
+	Host     []HostDefintion     `yaml:"hosts" json:"hosts"`
 }
 
 //NetworkDefinition - Defines the networks to be built
 type NetworkDefinition struct {
-	NetworkName string `yaml:"name"`
-	NetworkAddr string `yaml:"netaddr"`
-	DHCPLower   string `yaml:"dhcplower"`
-	DHCPUpper   string `yaml:"dhcpupper"`
-	Netmask     string `yaml:"netmask"`
-	Type        string `yaml:"type"`
+	NetworkName string `yaml:"name" json:"name"`
+	NetworkAddr string `yaml:"netaddr" json:"netaddr"`
+	DHCPLower   string `yaml:"dhcplower" json:"dhcplower"`
+	DHCPUpper   string `yaml:"dhcpupper" json:"dhcpupper"`
+	Netmask     string `yaml:"netmask" json:"netmask"`
+	Type        string `yaml:"type" json:"type"`
 }
 
 // HostDefintion - Defines the host on the virtual network
 type HostDefintion struct {
-	HostName string   `yaml:"name"`
-	Image    string   `yaml:"image"`
-	RAM      int      `yaml:"ram"`
-	CPUs     int      `yaml:"cpus"`
-	Username string   `yaml:"username"`
-	Password string   `yaml:"password"`
-	Networks []string `yaml:"networks"`
-	HDSpace  string   `yaml:"hd"`
+	HostName string   `yaml:"name" json:"name"`
+	Image    string   `yaml:"image" json:"image"`
+	RAM      int      `yaml:"ram" json:"ram"`
+	CPUs     int      `yaml:"cpus" json:"cpus"`
+	Username string   `yaml:"username" json:"username"`
+	Password string   `yaml:"password" json:"password"`
+	Networks []string `yaml:"networks" json:"networks"`
+	HDSpace  string   `yaml:"hd" json:"hd"`
 }
 
 //Domain writes the XML files

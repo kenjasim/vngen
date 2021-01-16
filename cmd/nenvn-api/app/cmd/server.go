@@ -10,6 +10,21 @@ import (
 func StartServer() {
 	r := mux.NewRouter()
 
+	// Handle the building of the deployment
+	r.HandleFunc("/build", build).Methods("PUT")
+
+	// Handle the starting of the deployment or host
+	r.HandleFunc("/start/{resource}/{name}", start)
+
+	// Handle the stopping of the deployment or host
+	r.HandleFunc("/stop/{resource}/{name}", stop)
+
+	// Handle the restarting of the deployment or host
+	r.HandleFunc("/restart/{resource}/{name}", restart)
+
+	// Handle the destroying of the deployment or host
+	r.HandleFunc("/destroy/{resource}/{name}", destroy)
+
 	// Handle the getting of the host details
 	r.HandleFunc("/hosts", getHosts)
 

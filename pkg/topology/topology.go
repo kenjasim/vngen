@@ -6,18 +6,17 @@ import (
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"nenvoy.com/pkg/constants"
-	"nenvoy.com/pkg/constructor"
 	"nenvoy.com/pkg/database"
 	"nenvoy.com/pkg/deployment"
 	"nenvoy.com/pkg/host"
 	"nenvoy.com/pkg/network"
 	"nenvoy.com/pkg/utils/printing"
+
+	structs "nenvoy.com/pkg/constants"
 )
 
 //Build - Build the virtual network
-func Build(templatePath string) (err error) {
-	// Read in the template file
-	vnDef, err := constructor.ConvertYAML(templatePath)
+func Build(vnDef structs.VirtualNetworkDefinition) (err error) {
 
 	printing.PrintInfo(fmt.Sprintf("Creating deployment %s...", vnDef.Deployment.DeploymentName))
 
@@ -37,7 +36,7 @@ func Build(templatePath string) (err error) {
 	dep := &deployment.Deployment{Name: vnDef.Deployment.DeploymentName}
 
 	// Create the networks
-	err = createNetworks(*vnDef, dep)
+	err = createNetworks(vnDef, dep)
 	if err != nil {
 		creationError := errors.Wrap(err, "failed to create networks")
 		cleanupDeployment(dep)
@@ -45,7 +44,7 @@ func Build(templatePath string) (err error) {
 	}
 
 	// Create the hosts
-	err = createHosts(*vnDef, dep)
+	err = createHosts(vnDef, dep)
 	if err != nil {
 		creationError := errors.Wrap(err, "failed to create hosts")
 		cleanupDeployment(dep)
@@ -220,6 +219,12 @@ func DestroyDeployment(depName string) (err error) {
 		if err != nil {
 			return err
 		}
+	}
+
+	// Destroy the deployment
+	err = dep.Destroy()
+	if err != nil {
+		return err
 	}
 
 	return nil

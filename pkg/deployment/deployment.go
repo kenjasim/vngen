@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 
 	constants "nenvoy.com/pkg/constants"
+	"nenvoy.com/pkg/database"
 	"nenvoy.com/pkg/host"
 	"nenvoy.com/pkg/network"
 )
@@ -17,6 +18,18 @@ type Deployment struct {
 	Name     string
 	Hosts    []host.Host
 	Networks []network.Network
+}
+
+// Destroy Destroys the deployment
+func (d *Deployment) Destroy() (err error) {
+	db, err := database.NewSession()
+	if err != nil {
+		return err
+	}
+
+	db.Delete(&d)
+
+	return nil
 }
 
 // GetDeploymentByID - Gets a deployment from the database by it's ID

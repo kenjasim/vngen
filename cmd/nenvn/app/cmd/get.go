@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"text/tabwriter"
 
 	"nenvoy.com/pkg/deployment"
@@ -120,8 +119,8 @@ func getIPs() (err error) {
 		if len(ifaces) == 0 {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", hst.Name, "", "", "", dep.Name)
 		}
-		for name, iface := range ifaces {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", hst.Name, name, iface[0], strings.Join(iface[1:], ","), dep.Name)
+		for _, iface := range ifaces {
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", hst.Name, iface.Name, iface.MacAddress, iface.IPv4, dep.Name)
 		}
 	}
 	w.Flush()

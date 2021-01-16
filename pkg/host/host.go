@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"strings"
 
 	"nenvoy.com/pkg/database"
 	"nenvoy.com/pkg/utils/printing"
@@ -30,6 +31,13 @@ type Host struct {
 	Password     string
 	HDSpace      string
 	DeploymentID uint
+}
+
+// NetworkDetails - Struct for returning network details
+type NetworkDetails struct {
+	Name       string
+	MacAddress string
+	IPv4       string
 }
 
 // createHostXML - Create the host domain
@@ -294,15 +302,13 @@ func (h *Host) GetHostState() (state string, err error) {
 }
 
 // GetHostIfaces - returns the Host IPs
-func (h *Host) GetHostIfaces() (ifaces map[string][]string, err error) {
+func (h *Host) GetHostIfaces() (ifaces []NetworkDetails, err error) {
 	// Connect to the libvirt socket
 	conn, err := libvirt.NewConnect("qemu:///system")
 	if err != nil {
 		return ifaces, err
 	}
 	defer conn.Close()
-
-	ifaces = make(map[string][]string)
 
 	// Get the domain by name
 	dom, err := conn.LookupDomainByName(h.Name)
@@ -321,14 +327,21 @@ func (h *Host) GetHostIfaces() (ifaces map[string][]string, err error) {
 	domIfaces, err := dom.ListAllInterfaceAddresses(0)
 
 	for _, iface := range domIfaces {
-		// Loop through the interface and assign the IPs
-		macIP := []string{iface.Hwaddr}
+		// Get the IPs
+		ips := []string{}
 		for _, ip := range iface.Addrs {
-			macIP = append(macIP, ip.Addr)
+			ips = append(ips, ip.Addr)
 		}
 
-		// Add to map
-		ifaces[iface.Name] = macIP
+		// Add details to struct
+		netDet := NetworkDetails{
+			Name:       iface.Name,
+			MacAddress: iface.Hwaddr,
+			IPv4:       strings.Join(ips, ","),
+		}
+
+		// Add to list
+		ifaces = append(ifaces, netDet)
 	}
 
 	return ifaces, nil

@@ -123,6 +123,14 @@ func (n *Network) Destroy() (err error) {
 		return err
 	}
 
+	db, err := database.NewSession()
+	if err != nil {
+		return err
+	}
+
+	// Remove from the database
+	db.Delete(&n)
+
 	printing.PrintSuccess(fmt.Sprintf("Destroyed network %s", n.Name))
 
 	return nil

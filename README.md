@@ -1,3 +1,4 @@
+<!-- omit in toc -->
 # Nenvoy (automated) Virtualised Networks (nenvn)
 Automated virtual network generation in golang utilising QEMU virtulisation and KVM hardware acceleration
 
@@ -10,27 +11,25 @@ Automated virtual network generation in golang utilising QEMU virtulisation and 
 * Log management 
 * Supported on Linux only (plans for macos support with hvf virtualisation)
 
+<!-- omit in toc -->
 ## Table of Contents
-- [Nenvoy (automated) Virtualised Networks (nenvn)](#nenvoy-automated-virtualised-networks-nenvn)
-  - [Table of Contents](#table-of-contents)
-  - [Requirements](#requirements)
-  - [YAML Topology Configuration](#yaml-topology-configuration)
-  - [Command Line Interface](#command-line-interface)
-    - [Installation](#installation)
-    - [Create Network Deployment](#create-network-deployment)
-    - [Start, Stop, Restart and Destroy Hosts or Deployments](#start-stop-restart-and-destroy-hosts-or-deployments)
-    - [Display Information](#display-information)
-      - [Hosts](#hosts)
-      - [Networks](#networks)
-      - [IPs](#ips)
-  - [Rest API Server](#rest-api-server)
-    - [Installation](#installation-1)
-    - [Server (Localhost mode with http)](#server-localhost-mode-with-http)
-    - [URL Endpoints](#url-endpoints)
-      - [Build](#build)
-      - [Start, Stop, Restart, Destroy](#start-stop-restart-destroy)
-      - [Details](#details)
-
+- [Requirements](#requirements)
+- [YAML Topology Configuration](#yaml-topology-configuration)
+- [Command Line Interface](#command-line-interface)
+  - [Installation](#installation)
+  - [Create Network Deployment](#create-network-deployment)
+  - [Start, Stop, Restart and Destroy Hosts or Deployments](#start-stop-restart-and-destroy-hosts-or-deployments)
+  - [Display Information](#display-information)
+    - [Hosts](#hosts)
+    - [Networks](#networks)
+    - [IPs](#ips)
+- [Rest API Server](#rest-api-server)
+  - [Installation](#installation-1)
+  - [Server (Localhost mode with http)](#server-localhost-mode-with-http)
+  - [URL Endpoints](#url-endpoints)
+    - [Build](#build)
+    - [Start, Stop, Restart, Destroy](#start-stop-restart-destroy)
+    - [Details](#details)
 
 ## Requirements
 

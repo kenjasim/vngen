@@ -1,4 +1,4 @@
-# nenvn
+# Nenvoy (automated) Virtualised Networks (nenvn)
 Automated virtual network generation in golang utilising QEMU virtulisation and KVM hardware acceleration
 
 * Command line based application 
@@ -11,7 +11,7 @@ Automated virtual network generation in golang utilising QEMU virtulisation and 
 * Supported on Linux only (plans for macos support with hvf virtualisation)
 
 ## Table of Contents
-- [nenvn](#nenvn)
+- [Nenvoy (automated) Virtualised Networks (nenvn)](#nenvoy-automated-virtualised-networks-nenvn)
   - [Table of Contents](#table-of-contents)
   - [Requirements](#requirements)
   - [YAML Topology Configuration](#yaml-topology-configuration)

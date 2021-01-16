@@ -29,6 +29,7 @@ var getCmd = &cobra.Command{
 		//Sepcify the username for connecting
 		if len(args) != 1 {
 			handle.Error(errors.New("Need to specify hosts, networks or ips, see help for more details"))
+			return
 		}
 
 		printing.PrintInfo(fmt.Sprintf("Getting %s", args[0]))

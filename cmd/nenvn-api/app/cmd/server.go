@@ -14,16 +14,16 @@ func StartServer() {
 	r.HandleFunc("/build", build).Methods("PUT")
 
 	// Handle the starting of the deployment or host
-	r.HandleFunc("/start/{resource}/{name}", start)
+	r.HandleFunc("/start/{resource}/{name}", start).Methods("POST")
 
 	// Handle the stopping of the deployment or host
-	r.HandleFunc("/stop/{resource}/{name}", stop)
+	r.HandleFunc("/stop/{resource}/{name}", stop).Methods("POST")
 
 	// Handle the restarting of the deployment or host
-	r.HandleFunc("/restart/{resource}/{name}", restart)
+	r.HandleFunc("/restart/{resource}/{name}", restart).Methods("POST")
 
 	// Handle the destroying of the deployment or host
-	r.HandleFunc("/destroy/{resource}/{name}", destroy)
+	r.HandleFunc("/destroy/{resource}/{name}", destroy).Methods("POST")
 
 	// Handle the getting of the host details
 	r.HandleFunc("/hosts", getHosts)

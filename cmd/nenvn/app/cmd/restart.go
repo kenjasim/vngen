@@ -24,6 +24,7 @@ var restartCmd = &cobra.Command{
 		//Sepcify the username for connecting
 		if len(args) != 2 {
 			handle.Error(errors.New("Need to specify deployment or host, see help for more details"))
+			return
 		}
 
 		printing.PrintInfo(fmt.Sprintf("Restarting %s %s", args[0], args[1]))

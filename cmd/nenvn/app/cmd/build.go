@@ -25,6 +25,7 @@ var buildCmd = &cobra.Command{
 		//Sepcify the username for connecting
 		if len(args) != 1 {
 			handle.Error(errors.New("Need to specify template file, see help for more details"))
+			return
 		}
 
 		printing.PrintInfo("Building network from template " + args[0])

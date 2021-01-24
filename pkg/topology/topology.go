@@ -2,8 +2,10 @@ package topology
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v2"
 	"gorm.io/gorm"
 	"nenvoy.com/pkg/constants"
 	"nenvoy.com/pkg/database"
@@ -14,6 +16,31 @@ import (
 
 	structs "nenvoy.com/pkg/constants"
 )
+
+// BuildFromFile - Allows the building of a VN from a file
+func BuildFromFile(filename string) (err error) {
+	printing.PrintInfo(fmt.Sprintf("Building  deployment %s...", filename))
+
+	// Read in the yaml config file
+	buf, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	vnDef := &structs.VirtualNetworkDefinition{}
+	err = yaml.Unmarshal(buf, vnDef)
+	if err != nil {
+		return fmt.Errorf("in file %q: %v", filename, err)
+	}
+
+	err = Build(*vnDef)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
 
 //Build - Build the virtual network
 func Build(vnDef structs.VirtualNetworkDefinition) (err error) {

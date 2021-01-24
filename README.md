@@ -14,6 +14,9 @@ Automated virtual network generation in golang utilising QEMU virtulisation and 
 <!-- omit in toc -->
 ## Table of Contents
 - [Requirements](#requirements)
+  - [Ubuntu/Debian](#ubuntudebian)
+  - [Arch Linux](#arch-linux)
+  - [Ubuntu/Debian](#ubuntudebian-1)
 - [YAML Topology Configuration](#yaml-topology-configuration)
 - [Command Line Interface](#command-line-interface)
   - [Installation](#installation)
@@ -35,9 +38,19 @@ Automated virtual network generation in golang utilising QEMU virtulisation and 
 
 Install KVM and Qemu
 
+### Ubuntu/Debian
+
 ```shell
-sudo apt install -v qemu libvirt-client libvirt-dev
+sudo apt install -v qemu libvirt-client libvirt-dev cloud-utils
 ```
+
+### Arch Linux
+
+```shell
+sudo pacman -S qemu libvirt cloud-utils
+```
+
+### Ubuntu/Debian
 
 ## YAML Topology Configuration 
 

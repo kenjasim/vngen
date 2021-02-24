@@ -98,33 +98,33 @@ hosts:
 
 ```bash
 # Clone repository
-$ git clone https://github.com/Nenvoy/nenvn.git
-$ cd nenvn 
+$ git clone https://github.com/Nenvoy/vngen.git
+$ cd vngen 
 # Build application binaries
-$ go build -o nenvn cmd/nenvn/nenvn.go 
-# Add nenvn application to PATH
-$ mv nenvn /usr/local/bin
+$ go build -o vngen cmd/vngen/vngen.go 
+# Add vngen application to PATH
+$ mv vngen /usr/local/bin
 ``` 
 
 ### Create Network Deployment
 ```go
-sudo nenvn build </path/to/template> # default.yaml
+sudo vngen build </path/to/template> # default.yaml
 ```
 
 ### Start, Stop, Restart and Destroy Hosts or Deployments
 ```go
-sudo nenvn start [deployment|host] <name>
-sudo nenvn stop [deployment|host] <name>
-sudo nenvn restart [deployment|host] <name>
-sudo nenvn destroy [deployment|host] <name>
+sudo vngen start [deployment|host] <name>
+sudo vngen stop [deployment|host] <name>
+sudo vngen restart [deployment|host] <name>
+sudo vngen destroy [deployment|host] <name>
 ```
 
 ### Display Information
 You can display hosts, networks, and IPs
 ```go
-sudo nenvn get hosts
-sudo nenvn get networks
-sudo nenvn get ips
+sudo vngen get hosts
+sudo vngen get networks
+sudo vngen get ips
 ```
 
 #### Hosts
@@ -160,9 +160,10 @@ The RestAPI Server enables remote access to the application either through AVN's
 To launch the server just run the command on the binary
 
 ```
-sudo nenvn api
+sudo vngen api
 
 # Or you can specify the port
+
 sudo go run cmd/vngen/vngen.go api -p 30675 
 ```
 

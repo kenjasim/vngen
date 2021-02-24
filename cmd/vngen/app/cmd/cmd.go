@@ -15,9 +15,9 @@ var (
 
 	// Setup the initial nenadm command structure
 	baseCmd = &cobra.Command{
-		Use:   "nenvn",
-		Short: "nenvn: CLI to deploy custom virtualised networks using QEMU/KVM",
-		Long:  `nenvn: CLI to deploy custom virtualised networks using QEMU/KVM`,
+		Use:   "vngen",
+		Short: "vngen: CLI to deploy custom virtualised networks using QEMU/KVM",
+		Long:  `vngen: CLI to deploy custom virtualised networks using QEMU/KVM`,
 	}
 )
 

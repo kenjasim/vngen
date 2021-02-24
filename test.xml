@@ -1,9 +1,0 @@
-<devices>
-    <interface type='direct'>
-      <source dev='eth0' mode='vepa'/>
-    </interface>
-  </devices>
-
-  <interface type='direct'>
-      <source dev='eth0' mode='private'/>
-    </interface>

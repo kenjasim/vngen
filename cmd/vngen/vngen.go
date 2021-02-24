@@ -1,7 +1,7 @@
 package main
 
 import (
-	"nenvoy.com/cmd/nenvn/app/cmd"
+	"nenvoy.com/cmd/vngen/app/cmd"
 )
 
 func main() {

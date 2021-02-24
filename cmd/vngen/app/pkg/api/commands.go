@@ -1,18 +1,19 @@
-package cmd
+package api
 
 import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
-	"nenvoy.com/cmd/nenvn-api/app/pkg/actions"
+	"nenvoy.com/cmd/vngen/app/pkg/actions"
 	"nenvoy.com/pkg/utils/handle"
 
 	"github.com/gorilla/mux"
-	"nenvoy.com/cmd/nenvn-api/app/pkg/details"
+	"nenvoy.com/cmd/vngen/app/pkg/details"
 )
 
-func build(w http.ResponseWriter, r *http.Request) {
+//Build - builds the virtual network
+func Build(w http.ResponseWriter, r *http.Request) {
 	// Read the http request body
 	b, err := ioutil.ReadAll(r.Body)
 	handle.Error(err)
@@ -34,7 +35,7 @@ func build(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Successfuly built template"))
 }
 
-func start(w http.ResponseWriter, r *http.Request) {
+func Start(w http.ResponseWriter, r *http.Request) {
 	// Get the variables
 	vars := mux.Vars(r)
 
@@ -55,7 +56,7 @@ func start(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("Successfuly started %s %s", vars["resource"], vars["name"])))
 }
 
-func stop(w http.ResponseWriter, r *http.Request) {
+func Stop(w http.ResponseWriter, r *http.Request) {
 	// Get the variables
 	vars := mux.Vars(r)
 	if vars["resource"] != "host" && vars["resource"] != "deployment" {
@@ -75,7 +76,7 @@ func stop(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("Successfuly stopped %s %s", vars["resource"], vars["name"])))
 }
 
-func restart(w http.ResponseWriter, r *http.Request) {
+func Restart(w http.ResponseWriter, r *http.Request) {
 	// Get the variables
 	vars := mux.Vars(r)
 
@@ -96,7 +97,7 @@ func restart(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("Successfuly restarted %s %s", vars["resource"], vars["name"])))
 }
 
-func destroy(w http.ResponseWriter, r *http.Request) {
+func Destroy(w http.ResponseWriter, r *http.Request) {
 	// Get the variables
 	vars := mux.Vars(r)
 
@@ -117,7 +118,7 @@ func destroy(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("Successfuly destroyed %s %s", vars["resource"], vars["name"])))
 }
 
-func getHosts(w http.ResponseWriter, r *http.Request) {
+func GetHosts(w http.ResponseWriter, r *http.Request) {
 	resp, err := details.GetHosts()
 
 	if err != nil {
@@ -133,7 +134,7 @@ func getHosts(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
-func getNetworks(w http.ResponseWriter, r *http.Request) {
+func GetNetworks(w http.ResponseWriter, r *http.Request) {
 	resp, err := details.GetNetworks()
 
 	if err != nil {
@@ -149,7 +150,7 @@ func getNetworks(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
-func getHost(w http.ResponseWriter, r *http.Request) {
+func GetHost(w http.ResponseWriter, r *http.Request) {
 
 	// Get the variables
 	vars := mux.Vars(r)
@@ -168,7 +169,7 @@ func getHost(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
-func getHostIP(w http.ResponseWriter, r *http.Request) {
+func GetHostIP(w http.ResponseWriter, r *http.Request) {
 
 	// Get the variables
 	vars := mux.Vars(r)

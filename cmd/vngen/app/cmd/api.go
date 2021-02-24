@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,47 +12,54 @@ import (
 )
 
 func init() {
+	// Api port flag
+	apiCmd.PersistentFlags().IntVarP(&port, "port", "p", 8000, "Specify the port number to be used for the rest api")
+
 	baseCmd.AddCommand(apiCmd)
 }
 
-var apiCmd = &cobra.Command{
-	Use:   "api",
-	Short: "Run the rest api",
-	Long:  `Run the rest api`,
-	Run: func(cmd *cobra.Command, args []string) {
+var (
+	port int
 
-		printing.PrintInfo("Running rest api")
-		// Distribute binaries and handle the setup
+	apiCmd = &cobra.Command{
+		Use:   "api",
+		Short: "Run the rest api",
+		Long:  `Run the rest api`,
+		Run: func(cmd *cobra.Command, args []string) {
 
-		r := mux.NewRouter()
+			printing.PrintInfo(fmt.Sprintf("Running rest api on http://localhost:%d", port))
+			// Distribute binaries and handle the setup
 
-		// Handle the building of the deployment
-		r.HandleFunc("/build", api.Build).Methods("PUT")
+			r := mux.NewRouter()
 
-		// Handle the starting of the deployment or host
-		r.HandleFunc("/start/{resource}/{name}", api.Start).Methods("POST")
+			// Handle the building of the deployment
+			r.HandleFunc("/build", api.Build).Methods("PUT")
 
-		// Handle the stopping of the deployment or host
-		r.HandleFunc("/stop/{resource}/{name}", api.Stop).Methods("POST")
+			// Handle the starting of the deployment or host
+			r.HandleFunc("/start/{resource}/{name}", api.Start).Methods("POST")
 
-		// Handle the restarting of the deployment or host
-		r.HandleFunc("/restart/{resource}/{name}", api.Restart).Methods("POST")
+			// Handle the stopping of the deployment or host
+			r.HandleFunc("/stop/{resource}/{name}", api.Stop).Methods("POST")
 
-		// Handle the destroying of the deployment or host
-		r.HandleFunc("/destroy/{resource}/{name}", api.Destroy).Methods("POST")
+			// Handle the restarting of the deployment or host
+			r.HandleFunc("/restart/{resource}/{name}", api.Restart).Methods("POST")
 
-		// Handle the getting of the host details
-		r.HandleFunc("/hosts", api.GetHosts)
+			// Handle the destroying of the deployment or host
+			r.HandleFunc("/destroy/{resource}/{name}", api.Destroy).Methods("POST")
 
-		// Handle the getting of the network details
-		r.HandleFunc("/networks", api.GetNetworks)
+			// Handle the getting of the host details
+			r.HandleFunc("/hosts", api.GetHosts)
 
-		// Get the IP of a particular host
-		r.HandleFunc("/details/{host}", api.GetHost)
+			// Handle the getting of the network details
+			r.HandleFunc("/networks", api.GetNetworks)
 
-		// Get the IP of a particular host
-		r.HandleFunc("/details/{host}/ipv4", api.GetHostIP)
+			// Get the IP of a particular host
+			r.HandleFunc("/details/{host}", api.GetHost)
 
-		handle.Error(http.ListenAndServe(":8000", r))
-	},
-}
+			// Get the IP of a particular host
+			r.HandleFunc("/details/{host}/ipv4", api.GetHostIP)
+
+			handle.Error(http.ListenAndServe(fmt.Sprintf(":%d", port), r))
+		},
+	}
+)

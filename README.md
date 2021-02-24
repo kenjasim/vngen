@@ -1,5 +1,5 @@
 <!-- omit in toc -->
-# Nenvoy (automated) Virtualised Networks (nenvn)
+# Virtual Network Generator (vngen)
 Automated virtual network generation in golang utilising QEMU virtulisation and KVM hardware acceleration
 
 * Command line based application 
@@ -9,7 +9,7 @@ Automated virtual network generation in golang utilising QEMU virtulisation and 
 * Data persistence 
 * RestApi server mode for remote connection.
 * Log management 
-* Supported on Linux only (plans for macos support with hvf virtualisation)
+* Supported on Linux only 
 
 <!-- omit in toc -->
 ## Table of Contents
@@ -27,7 +27,6 @@ Automated virtual network generation in golang utilising QEMU virtulisation and 
     - [Networks](#networks)
     - [IPs](#ips)
 - [Rest API Server](#rest-api-server)
-  - [Installation](#installation-1)
   - [Server (Localhost mode with http)](#server-localhost-mode-with-http)
   - [URL Endpoints](#url-endpoints)
     - [Build](#build)
@@ -156,20 +155,15 @@ master2 vnet1     52:54:00:ed:90:f9 20.0.0.88  default
 ## Rest API Server 
 The RestAPI Server enables remote access to the application either through AVN's client mode, or via direct http (localhost), https (remote) requests. 
 
-### Installation 
-```bash
-$ cd nenvn 
-# Build application binaries
-$ go build -o nenvn-api cmd/nenvn-api/api.go 
-# Add nenvn-api application to PATH
-$ mv nenvn-api /usr/local/bin
-``` 
 
 ### Server (Localhost mode with http) 
-To launch the server just run the binary
+To launch the server just run the command on the binary
 
 ```
-sudo nenvn-api
+sudo nenvn api
+
+# Or you can specify the port
+sudo go run cmd/vngen/vngen.go api -p 30675 
 ```
 
 ### URL Endpoints

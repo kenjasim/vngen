@@ -98,7 +98,7 @@ hosts:
 
 ```bash
 # Clone repository
-$ git clone https://github.com/Nenvoy/vngen.git
+$ git clone https://github.com/Kenjasim/vngen.git
 $ cd vngen 
 # Build application binaries
 $ go build -o vngen cmd/vngen/vngen.go 
